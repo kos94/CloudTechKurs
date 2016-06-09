@@ -1,4 +1,4 @@
-package com.javanettest;
+package com.cloudtechkurs;
 
 public class Task {
 	

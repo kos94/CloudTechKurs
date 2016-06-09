@@ -1,4 +1,4 @@
-package com.javanettest;
+package com.cloudtechkurs;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

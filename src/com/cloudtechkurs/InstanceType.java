@@ -1,4 +1,4 @@
-package com.javanettest;
+package com.cloudtechkurs;
 
 public enum InstanceType {
 	A0("A0", "A0 : 1 cores | 1GB RAM | 20GB HDD"),

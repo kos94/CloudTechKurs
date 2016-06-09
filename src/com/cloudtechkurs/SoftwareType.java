@@ -1,4 +1,4 @@
-package com.javanettest;
+package com.cloudtechkurs;
 
 public enum SoftwareType {
 	GCC("3", "GCC v4.9.2"),
