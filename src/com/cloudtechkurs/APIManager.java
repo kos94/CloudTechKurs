@@ -52,22 +52,6 @@ public class APIManager {
 		apiManager.stopTask(task.getTaskId());
 		
 		apiManager.deleteTask(task.getTaskId());
-		
-		
-//		apiManager
-//		System.out.println("Testing 1 - Send Http GET request");
-//		http.sendGet();
-		
-//		System.out.println("\nTesting 2 - Send Http POST request");
-		
-//		testDelete("1373");
-//		String id = testCreateTask();
-
-
-		// test refresh task
-//		testRefreshTask("137");
-		
-//		testStop(id);
 	}
 	
 	public Task createTask(String taskName, String resultName, String repository, 
@@ -91,7 +75,7 @@ public class APIManager {
 		HttpResponse response = sendPost(url, params);
 		response.assertOk();
 		
-		JSONObject obj = new JSONObject(response);
+		JSONObject obj = new JSONObject(response.mText);
 		String taskId = obj.get("id").toString();
 		task.setTaskId(taskId);
 		
