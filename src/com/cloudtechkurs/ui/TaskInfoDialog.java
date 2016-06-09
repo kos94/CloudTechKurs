@@ -1,18 +1,8 @@
 package com.cloudtechkurs.ui;
 
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
@@ -20,7 +10,7 @@ import com.cloudtechkurs.core.InstanceType;
 import com.cloudtechkurs.core.SoftwareType;
 import com.cloudtechkurs.core.Task;
 
-public class TaskInfoDialog extends Dialog {
+public class TaskInfoDialog extends BaseDialog {
 	
 	private Text mTaskName;
 	private Text mResultName;
@@ -28,39 +18,21 @@ public class TaskInfoDialog extends Dialog {
 	private Combo mSoftwareType;
 	private Combo mInstanceType;
 	private Text mRunCommand;
-	private int mWidgetStyle;
 	
 	private Task mTask;
 	
 	public TaskInfoDialog(Shell parent, boolean isReadOnly) {
-		super(parent);
-		setText("Task info");
-		mWidgetStyle = isReadOnly? SWT.READ_ONLY : SWT.NONE;
+		super(parent, "Task info", isReadOnly);
 	}
 	
 	public Task open(Task initialValues) {
-        Shell parent = getParent();
-        Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-        shell.setText(getText());
-        GridLayout layout = new GridLayout(2, false);
-		layout.horizontalSpacing = 15;
-		layout.verticalSpacing = 20;
-		layout.marginWidth = layout.marginHeight = 15;
-        shell.setLayout(layout);
+        Shell shell = createShell();
         
         initUI(shell);
         
         initWidgetValues(initialValues);
         
-        shell.pack();
-        Rectangle screenSize = shell.getDisplay().getBounds();
-        shell.setLocation((screenSize.width - shell.getBounds().width) / 2, 
-        		(screenSize.height - shell.getBounds().height) / 2);
-        shell.open();
-        Display display = parent.getDisplay();
-        while (!shell.isDisposed()) {
-                if (!display.readAndDispatch()) display.sleep();
-        }
+        runLoop(shell);
         
         return mTask;
 	}
@@ -96,20 +68,7 @@ public class TaskInfoDialog extends Dialog {
         addLabel(parent, "Run command");
         mRunCommand = createText(parent);
         
-        Button okButton = new Button(parent, SWT.PUSH);
-        okButton.setText("OK");
-        GridData gd = new GridData(SWT.CENTER, SWT.CENTER, true, false, 2, 1);
-        gd.widthHint = 80;
-        okButton.setLayoutData(gd);
-        
-        okButton.addSelectionListener(new SelectionAdapter() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				updateTask();
-				e.widget.getDisplay().getActiveShell().dispose();
-			}
-		});
+        addOkButton(parent);
 	}
 	
 	private void initWidgetValues(Task task) {
@@ -120,26 +79,16 @@ public class TaskInfoDialog extends Dialog {
 		mInstanceType.select(task.getInstanceType().ordinal());
 		mRunCommand.setText(task.getRunCommand());
 	}
-	
-	private void updateTask() {
+
+	@Override
+	protected void onOkPressed(SelectionEvent event) {
 		mTask = new Task(mTaskName.getText(),
 				mResultName.getText(),
 				mRepository.getText(),
 				SoftwareType.values()[ mSoftwareType.getSelectionIndex() ],
 				InstanceType.values()[ mInstanceType.getSelectionIndex() ],
 				mRunCommand.getText());
-	}
-	
-	private void addLabel(Composite parent, String text) {
-		Label label = new Label(parent, SWT.NONE);
-		label.setText(text);
-	}
-	
-	private Text createText(Composite parent) {
-		Text text = new Text(parent, mWidgetStyle);
-        GridData gd = new GridData(SWT.CENTER, SWT.CENTER, true, false);
-        gd.widthHint = 300;
-        text.setLayoutData(gd);
-        return text;
+		
+		event.widget.getDisplay().getActiveShell().dispose();
 	}
 }

@@ -90,4 +90,12 @@ public class TaskRegistry {
 			}
 		}
 	}
+	
+	public String getApiKey() {
+		return mApiManager.getApiKey();
+	}
+	
+	public void setApiKey(String key) {
+		mApiManager.setApiKey(key);
+	}
 }

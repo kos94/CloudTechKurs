@@ -171,4 +171,12 @@ public class APIManager {
 		
 		return content.toString();
 	}
+	
+	public String getApiKey() {
+		return mKey;
+	}
+	
+	public void setApiKey(String key) {
+		mKey = key;
+	}
 }

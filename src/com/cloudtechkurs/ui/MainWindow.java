@@ -156,6 +156,17 @@ public class MainWindow {
 			}
 		});
 		
+		mApiKey.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ApiKeyDialog dialog = new ApiKeyDialog(mShell);
+				String result = dialog.open(mTaskRegistry.getApiKey());
+				if(result != null) {
+					mTaskRegistry.setApiKey(result);
+				}
+			}
+		});
+		
 		mRefresh.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
