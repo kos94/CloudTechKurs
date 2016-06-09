@@ -1,4 +1,4 @@
-package com.cloudtechkurs;
+package com.cloudtechkurs.core;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -33,6 +33,16 @@ class HttpResponse {
 }
 
 public class APIManager {
+	public static final String TASK_NAME_KEY = "taskName";
+	public static final String RESULT_NAME_KEY = "resultName";
+	public static final String REPOSITORY_KEY = "repository";
+	public static final String SOFTWARE_ID_KEY = "software_id";
+	public static final String INSTANCE_KEY = "instance";
+	public static final String RUN_COMMAND_KEY = "run_command";
+	public static final String ACCOUNT_TYPE_KEY = "account_type";
+	public static final String TASK_ID_KEY = "id";
+	public static final String STATUS_KEY = "taskStatus";
+	
 	private static final String DEFAULT_API_KEY = "D8TUseKdgFdOCsME";
 	
 	private String mKey = DEFAULT_API_KEY;
@@ -63,13 +73,13 @@ public class APIManager {
 		String url = "https://api.flyelephant.net/v1/tasks/initiateTask";
 		
 		Map<String, String> params = new HashMap<String, String>();
-		params.put("taskName", task.getTaskName()); //TestTask
-		params.put("resultName", task.getResultName());
-		params.put("repository", task.getRepository());
-		params.put("software_id", task.getSoftwareType().getId());
-		params.put("instance", task.getInstanceType().getId());
-		params.put("run_command", task.getRunCommand());
-		params.put("account_type", task.getAccountType());
+		params.put(TASK_NAME_KEY, task.getTaskName());
+		params.put(RESULT_NAME_KEY, task.getResultName());
+		params.put(REPOSITORY_KEY, task.getRepository());
+		params.put(SOFTWARE_ID_KEY, task.getSoftwareType().getId());
+		params.put(INSTANCE_KEY, task.getInstanceType().getId());
+		params.put(RUN_COMMAND_KEY, task.getRunCommand());
+		params.put(ACCOUNT_TYPE_KEY, task.getAccountType());
 		
 		//TODO handle fail somewhere
 		HttpResponse response = sendPost(url, params);
@@ -90,7 +100,7 @@ public class APIManager {
 		response.assertOk();
 		
 		JSONObject obj = new JSONObject(response.mText);
-		return obj.getString("taskStatus");
+		return obj.getString(STATUS_KEY);
 	}
 	
 	public void stopTask(String taskId) throws Exception {

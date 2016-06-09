@@ -1,5 +1,11 @@
-package com.cloudtechkurs;
+package com.cloudtechkurs.core;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+
+import org.json.JSONObject;
+
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Task {
 	
 	public static final String DEFAULT_TASK_NAME = "TestTask";
@@ -10,6 +16,8 @@ public class Task {
 	public static final InstanceType DEFAULT_INSTANCE_TYPE = InstanceType.A0;
 	public static final String DEFAULT_RUN_COMMAND = "make;./test";
 	
+	private String mTaskId = "-1";
+	
 	private String mTaskName;
 	private String mResultName;
 	private String mRepository;
@@ -17,8 +25,7 @@ public class Task {
 	private InstanceType mInstance;
 	private String mRunCommand;
 	
-	private String mTaskId;
-	private String mStatus = "Doesn't exist"; //TODO not sure, maybe delete
+	private String mStatus = "Unknown";
 	
 	public Task() {
 		this(DEFAULT_TASK_NAME, DEFAULT_RESULT_NAME, DEFAULT_REPOSITORY,
@@ -34,6 +41,19 @@ public class Task {
 		mSoftware = swType;
 		mInstance = instanceType;
 		mRunCommand = runCommand;
+	}
+	
+	public Task(JSONObject json) {
+		mTaskId = json.getString(APIManager.TASK_ID_KEY);
+		mTaskName = json.getString(APIManager.TASK_NAME_KEY);
+		mResultName = json.getString(APIManager.RESULT_NAME_KEY);
+		mRepository = json.getString(APIManager.REPOSITORY_KEY);
+		int iSoftware = json.getInt(APIManager.SOFTWARE_ID_KEY);
+		mSoftware = SoftwareType.values()[iSoftware];
+		int iInstance = json.getInt(APIManager.INSTANCE_KEY);
+		mInstance = InstanceType.values()[iInstance];
+		mRunCommand = json.getString(APIManager.RUN_COMMAND_KEY);
+		mStatus = json.getString(APIManager.STATUS_KEY);
 	}
 	
 	public String getTaskName() {
@@ -68,7 +88,24 @@ public class Task {
 		return mTaskId;
 	}
 	
+	public String getStatus() {
+		return mStatus;
+	}
+	
 	public void setTaskId(String id) {
 		mTaskId = id;
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject obj = new JSONObject();
+		obj.put(APIManager.TASK_ID_KEY, mTaskId);
+		obj.put(APIManager.TASK_NAME_KEY, mTaskName);
+		obj.put(APIManager.RESULT_NAME_KEY, mResultName);
+		obj.put(APIManager.REPOSITORY_KEY, mRepository);
+		obj.put(APIManager.SOFTWARE_ID_KEY, mSoftware.ordinal());
+		obj.put(APIManager.INSTANCE_KEY, mInstance.ordinal());
+		obj.put(APIManager.RUN_COMMAND_KEY, mRunCommand);
+		obj.put(APIManager.STATUS_KEY, mStatus);
+		return obj;
 	}
 }

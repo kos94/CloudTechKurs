@@ -1,4 +1,4 @@
-package com.cloudtechkurs;
+package com.cloudtechkurs.core;
 
 public enum SoftwareType {
 	GCC("3", "GCC v4.9.2"),
