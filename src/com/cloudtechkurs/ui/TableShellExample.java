@@ -9,7 +9,9 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -51,13 +53,35 @@ public class TableShellExample {
     shell.setMinimumSize(new Point(800, 600));
     
     shell.setText("A Table Shell Example");
-    shell.setLayout(new GridLayout(1, false));
+    shell.setLayout(new GridLayout(5, false));
     
 
     mTable = new Table(shell, SWT.BORDER);
-    GridData gd = new GridData(SWT.CENTER, SWT.TOP, true, true);
+    GridData gd = new GridData(SWT.CENTER, SWT.TOP, true, true, 5, 1);
     gd.minimumHeight = 400;
     mTable.setLayoutData(gd);
+    
+    Button apiKey = new Button(shell, SWT.PUSH);
+    apiKey.setText("Set API key");
+    gd = new GridData(SWT.BOTTOM, SWT.LEFT, false, false);
+    apiKey.setLayoutData(gd);
+    
+    Label emptySpace = new Label(shell, SWT.NONE);
+    gd = new GridData(SWT.BOTTOM, SWT.RIGHT, true, false);
+    emptySpace.setLayoutData(gd);
+    
+    Button stop = new Button(shell, SWT.PUSH);
+    stop.setText("Stop");
+    gd = new GridData(SWT.BOTTOM, SWT.RIGHT, false, false);
+    stop.setLayoutData(gd);
+    
+    Button delete = new Button(shell, SWT.PUSH);
+    delete.setText("Delete");
+    delete.setLayoutData(gd);
+    
+    Button newTask = new Button(shell, SWT.PUSH);
+    newTask.setText("New task");
+    newTask.setLayoutData(gd);
     
     mTable.addSelectionListener(new SelectionListener() {
 		
@@ -99,9 +123,11 @@ public class TableShellExample {
     new TableShellExample();
   }
   
+  // add task to UI
   public void addTask(Task task) {
 	  TableItem item = new TableItem(mTable, SWT.NONE);
-	  item.setText(new String[] { task.getTaskId(), task.getTaskName(), task.getStatus(), 
-	    		task.getSoftwareType().getName()});
+	  String[] content = new String[] { task.getTaskId(), task.getTaskName(), 
+			  task.getStatus(), task.getSoftwareType().getName()};
+	  item.setText(content);
   }
 }
