@@ -50,16 +50,19 @@ public class MainWindow {
 
 	private Table mTable;
 	private Button mApiKey;
+	private Button mRefresh;
 	private Button mStop;
 	private Button mDelete;
 	private Button mAdd;
 	
 	private TaskRegistry mTaskRegistry = new TaskRegistry();
 
-	MainWindow() {
+	public MainWindow() {
 		mTaskRegistry.load();
 		
 		initUI();
+		
+		refreshTaskStatus();
 		
 		addListeners();
 
@@ -82,10 +85,10 @@ public class MainWindow {
 		mShell = new Shell(display);
 		mShell.setMinimumSize(new Point(800, 600));
 		mShell.setText("FlyElephant Client");
-		mShell.setLayout(new GridLayout(5, false));
+		mShell.setLayout(new GridLayout(6, false));
 
 		mTable = new Table(mShell, SWT.FULL_SELECTION);
-		GridData gd = new GridData(SWT.CENTER, SWT.TOP, true, true, 5, 1);
+		GridData gd = new GridData(SWT.CENTER, SWT.TOP, true, true, 6, 1);
 		gd.minimumHeight = 500;
 		mTable.setLayoutData(gd);
 		mTable.setHeaderVisible(true);
@@ -96,13 +99,18 @@ public class MainWindow {
 		}
 		//add tasks from the registry
 		for(int i=0; i<mTaskRegistry.getTaskCount(); i++) {
-			addTask(mTaskRegistry.get(i));
+			addTaskToUI(mTaskRegistry.get(i));
 		}
 		
 		mApiKey = new Button(mShell, SWT.PUSH);
 		mApiKey.setText("Set API key");
 		gd = new GridData(SWT.BOTTOM, SWT.LEFT, false, false);
+		gd.widthHint = 80;
 		mApiKey.setLayoutData(gd);
+		
+		mRefresh = new Button(mShell, SWT.PUSH);
+		mRefresh.setText("Refresh");
+		mRefresh.setLayoutData(gd);
 
 		Label emptySpace = new Label(mShell, SWT.NONE);
 		gd = new GridData(SWT.BOTTOM, SWT.RIGHT, true, false);
@@ -148,64 +156,73 @@ public class MainWindow {
 			}
 		});
 		
+		mRefresh.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				refreshTaskStatus();
+			}
+		});
+		
 		mDelete.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String id = getSelectedId();
-				if(id != null) {
-					deleteTask(id);
-				}
+				deleteTask(mTable.getSelectionIndex());
 			}
 		});
 		
 		mStop.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String id = getSelectedId();
-				if(id != null) {
-					stopTask(id);
-				}
+				stopTask(mTable.getSelectionIndex());
 			}
 		});
 		
 		mAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				TaskInfoDialog dialog = new TaskInfoDialog(mShell);
-				dialog.open();
-				//TODO call dialog and return object from it...
+				TaskInfoDialog dialog = new TaskInfoDialog(mShell, new Task());
+				Task result = dialog.open(new Task());
+				if(result != null) {
+					addTask(result);
+				}
 			}
 		});
 	}
-	
-	private String getSelectedId() {
-		TableItem[] items = mTable.getSelection();
-		if(items.length > 0) {
-			return items[0].getText();
-		}
-		return null;
-	}
 
 	// add task to UI
-	public void addTask(Task task) {
+	public void addTaskToUI(Task task) {
 		TableItem item = new TableItem(mTable, SWT.NONE);
 		String[] content = new String[] { task.getTaskId(), task.getTaskName(), 
 				task.getStatus(), task.getSoftwareType().getName() };
 		item.setText(content);
 	}
 	
-	public void deleteTask(String id) {
+	public void addTask(Task task) {
 		try {
-			mTaskRegistry.deleteTask(id);
-			mTable.remove(mTable.getSelectionIndex());
+			mTaskRegistry.addTask(task);
+			addTaskToUI(task);
+		} catch (Exception e) {
+			showMessage("Addition error", e.getMessage());
+		}
+	}
+	
+	public void deleteTask(int index) {
+		try {
+			mTaskRegistry.deleteTask(index);
+			mTable.remove(index);
+			if(mTable.getItemCount() == 0) {
+				mStop.setEnabled(false);
+				mDelete.setEnabled(false);
+			}
 		} catch (Exception e) {
 			showMessage("Removal error", e.getMessage());
 		}
 	}
 	
-	public void stopTask(String id) { //TODO test
+	public void stopTask(int index) {
 		try {
-			mTaskRegistry.stopTask(id);
+			mTaskRegistry.stopTask(index);
+			updateLabels(index, mTaskRegistry.get(index));
 		}  catch (Exception e) {
 			showMessage("Error", e.getMessage());
 		}
@@ -216,6 +233,21 @@ public class MainWindow {
 		box.setText(title);
 		box.setMessage(message);
 		box.open();
+	}
+	
+	private void updateLabels(int rowIndex, Task task) {
+		TableItem item = mTable.getItem(rowIndex);
+		
+		String[] content = new String[] { task.getTaskId(), task.getTaskName(), 
+				task.getStatus(), task.getSoftwareType().getName() };
+		item.setText(content);
+	}
+	
+	private void refreshTaskStatus() {
+		mTaskRegistry.refreshTasksStatus();
+		for(int i=0; i<mTaskRegistry.getTaskCount(); i++) {
+			updateLabels(i, mTaskRegistry.get(i));
+		}
 	}
 	
 	public static void main(String[] argv) {

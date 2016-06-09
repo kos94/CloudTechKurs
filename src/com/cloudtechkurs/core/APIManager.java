@@ -46,30 +46,9 @@ public class APIManager {
 	private static final String DEFAULT_API_KEY = "D8TUseKdgFdOCsME";
 	
 	private String mKey = DEFAULT_API_KEY;
-
-	public static void main(String[] args) throws Exception {
-		
-		APIManager apiManager = new APIManager();
-		
-		Task task = apiManager.createTask("NewName", "NewResultName", 
-				Task.DEFAULT_REPOSITORY, 
-				Task.DEFAULT_SW_TYPE, 
-				Task.DEFAULT_INSTANCE_TYPE,
-				Task.DEFAULT_RUN_COMMAND);
-		
-		System.out.println(apiManager.getTaskStatus(task.getTaskId()));
-		
-		apiManager.stopTask(task.getTaskId());
-		
-		apiManager.deleteTask(task.getTaskId());
-	}
 	
-	public Task createTask(String taskName, String resultName, String repository, 
-			SoftwareType swType, InstanceType instanceType, String runCommand) 
-		throws Exception {
-		
-		Task task = new Task(taskName, resultName, repository, swType, instanceType, runCommand);
-						
+	public void createTask(Task task) throws Exception {
+					
 		String url = "https://api.flyelephant.net/v1/tasks/initiateTask";
 		
 		Map<String, String> params = new HashMap<String, String>();
@@ -81,15 +60,12 @@ public class APIManager {
 		params.put(RUN_COMMAND_KEY, task.getRunCommand());
 		params.put(ACCOUNT_TYPE_KEY, task.getAccountType());
 		
-		//TODO handle fail somewhere
 		HttpResponse response = sendPost(url, params);
 		response.assertOk();
 		
 		JSONObject obj = new JSONObject(response.mText);
 		String taskId = obj.get("id").toString();
 		task.setTaskId(taskId);
-		
-		return task;
 	}
 	
 	public String getTaskStatus(String taskId) throws Exception {

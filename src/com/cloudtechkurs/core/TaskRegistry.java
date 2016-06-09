@@ -59,30 +59,35 @@ public class TaskRegistry {
 		return mTasks.get(i);
 	}
 	
-	public void add(Task task) {
+	public void addTask(Task task) throws Exception {
+		mApiManager.createTask(task);
 		mTasks.add(task);
 	}
 	
-	public void deleteTask(String taskId) throws Exception {
-		int index = getTaskIndexById(taskId);
-		if(index != -1) {
+	public void deleteTask(int index) throws Exception {
+		if(index >= 0 && index < mTasks.size()) {
+			String taskId = mTasks.get(index).getTaskId();
+			mApiManager.deleteTask(taskId);
 			mTasks.remove(index);
 		}
-		mApiManager.deleteTask(taskId);
 	}
 	
-	public void stopTask(String taskId) throws Exception {
-		int index = getTaskIndexById(taskId);
-		mApiManager.stopTask(taskId);
-		mTasks.get(index).setStatus("Stopped");
+	public void stopTask(int index) throws Exception {
+		if(index >= 0 && index < mTasks.size()) {
+			String taskId = mTasks.get(index).getTaskId();
+			mApiManager.stopTask(taskId);
+			mTasks.get(index).setStatus("Stopped");
+		}
 	}
 	
-	private int getTaskIndexById(String taskId) {
-		for(int i=0; i<mTasks.size(); i++) {
-			if(mTasks.get(i).getTaskId().equals(taskId)) {
-				return i;
+	public void refreshTasksStatus() {
+		for(Task task : mTasks) {
+			try {
+				String status = mApiManager.getTaskStatus(task.getTaskId());
+				task.setStatus(status);
+			} catch (Exception e) {
+				task.setStatus("UNDEFINED");
 			}
 		}
-		return -1;
 	}
 }

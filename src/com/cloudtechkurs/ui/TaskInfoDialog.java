@@ -2,9 +2,12 @@ package com.cloudtechkurs.ui;
 
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
@@ -30,47 +33,23 @@ public class TaskInfoDialog extends Dialog {
 	
 	public TaskInfoDialog(Shell parent, Task task) {
 		super(parent);
+		setText("Task info");
 		mTask = task;
 		//TODO 
 //		setLayout(new GridLayout(2, false));
 	}
 	
-	public Task open() {
-		
+	public Task open(Task initialValues) {
         Shell parent = getParent();
         Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
         shell.setText(getText());
-        shell.setLayout(new GridLayout(2, false));
+        GridLayout layout = new GridLayout(2, false);
+		layout.horizontalSpacing = 15;
+		layout.verticalSpacing = 20;
+		layout.marginWidth = layout.marginHeight = 15;
+        shell.setLayout(layout);
         
-        addLabel(shell, "Task Name");
-        mTaskName = createText(shell);
-        
-        addLabel(shell, "Result Name");
-        mResultName = createText(shell);
-        
-        addLabel(shell, "Repository");
-        mRepository = createText(shell);
-        
-        addLabel(shell, "Software type");
-        mSoftwareType = new Combo(shell, SWT.NONE);
-        String[] swTypes = new String[SoftwareType.values().length];
-        int i = 0;
-        for(SoftwareType type : SoftwareType.values()) {
-        	swTypes[i++] = type.getName();
-        }
-        mSoftwareType.setItems(swTypes);
-        
-        addLabel(shell, "Instance type");
-        mInstanceType = new Combo(shell, SWT.NONE);
-        String[] instanceTypes = new String[InstanceType.values().length];
-        i = 0;
-        for(InstanceType type : InstanceType.values()) {
-        	instanceTypes[i++] = type.getName();
-        }
-        mInstanceType.setItems(instanceTypes);
-        
-        addLabel(shell, "Run command");
-        mRunCommand = createText(shell);
+        initUI(shell);
         
         initWidgetValues();
         
@@ -84,13 +63,72 @@ public class TaskInfoDialog extends Dialog {
                 if (!display.readAndDispatch()) display.sleep();
         }
         
-        //TODO collect result
+        return mTask;
+	}
+	
+	private void initUI(Composite parent) {
+		addLabel(parent, "Task Name");
+        mTaskName = createText(parent);
         
-        return null;
+        addLabel(parent, "Result Name");
+        mResultName = createText(parent);
+        
+        addLabel(parent, "Repository");
+        mRepository = createText(parent);
+        
+        addLabel(parent, "Software type");
+        mSoftwareType = new Combo(parent, SWT.NONE);
+        String[] swTypes = new String[SoftwareType.values().length];
+        int i = 0;
+        for(SoftwareType type : SoftwareType.values()) {
+        	swTypes[i++] = type.getName();
+        }
+        mSoftwareType.setItems(swTypes);
+        
+        addLabel(parent, "Instance type");
+        mInstanceType = new Combo(parent, SWT.NONE);
+        String[] instanceTypes = new String[InstanceType.values().length];
+        i = 0;
+        for(InstanceType type : InstanceType.values()) {
+        	instanceTypes[i++] = type.getName();
+        }
+        mInstanceType.setItems(instanceTypes);
+        
+        addLabel(parent, "Run command");
+        mRunCommand = createText(parent);
+        
+        Button okButton = new Button(parent, SWT.PUSH);
+        okButton.setText("OK");
+        GridData gd = new GridData(SWT.CENTER, SWT.CENTER, true, false, 2, 1);
+        gd.widthHint = 80;
+        okButton.setLayoutData(gd);
+        
+        okButton.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				updateTask();
+				e.widget.getDisplay().getActiveShell().dispose();
+			}
+		});
 	}
 	
 	private void initWidgetValues() {
-		
+		mTaskName.setText(mTask.getTaskName());
+		mResultName.setText(mTask.getResultName());
+		mRepository.setText(mTask.getRepository());
+		mSoftwareType.select(mTask.getSoftwareType().ordinal());
+		mInstanceType.select(mTask.getInstanceType().ordinal());
+		mRunCommand.setText(mTask.getRunCommand());
+	}
+	
+	private void updateTask() {
+		mTask = new Task(mTaskName.getText(),
+				mResultName.getText(),
+				mRepository.getText(),
+				SoftwareType.values()[ mSoftwareType.getSelectionIndex() ],
+				InstanceType.values()[ mInstanceType.getSelectionIndex() ],
+				mRunCommand.getText());
 	}
 	
 	private void addLabel(Composite parent, String text) {

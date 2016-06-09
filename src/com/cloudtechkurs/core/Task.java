@@ -92,6 +92,30 @@ public class Task {
 		return mStatus;
 	}
 	
+	public void setTaskName(String taskName) {
+		mTaskName = taskName;
+	}
+	
+	public void setResultName(String name) {
+		mResultName = name;
+	}
+	
+	public void setRepository(String repo) {
+		mRepository = repo;
+	}
+	
+	public void setSoftwareType(SoftwareType type) {
+		mSoftware = type;
+	}
+	
+	public void setInstanceType(InstanceType type) {
+		mInstance = type;
+	}
+	
+	public void setRunCommand(String command) {
+		mRunCommand = command;
+	}
+	
 	public void setTaskId(String id) {
 		mTaskId = id;
 	}
