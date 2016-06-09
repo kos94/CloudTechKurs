@@ -77,7 +77,7 @@ public class MainWindow {
 		}
 		display.dispose();
 		
-		System.out.println("FINISH");
+		mTaskRegistry.store();
 	}
 	
 	private void initUI() {
@@ -152,7 +152,7 @@ public class MainWindow {
 			
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
-				System.out.println("DOUBLE CLICK");
+				showTaskInfo(mTable.getSelectionIndex());
 			}
 		});
 		
@@ -180,7 +180,7 @@ public class MainWindow {
 		mAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				TaskInfoDialog dialog = new TaskInfoDialog(mShell, new Task());
+				TaskInfoDialog dialog = new TaskInfoDialog(mShell, false);
 				Task result = dialog.open(new Task());
 				if(result != null) {
 					addTask(result);
@@ -195,6 +195,14 @@ public class MainWindow {
 		String[] content = new String[] { task.getTaskId(), task.getTaskName(), 
 				task.getStatus(), task.getSoftwareType().getName() };
 		item.setText(content);
+	}
+	
+	public void showTaskInfo(int index) {
+		Task task = mTaskRegistry.get(index);
+		if(task != null) {
+			TaskInfoDialog dialog = new TaskInfoDialog(mShell, true);
+			dialog.open(task);
+		}
 	}
 	
 	public void addTask(Task task) {

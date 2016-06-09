@@ -28,15 +28,14 @@ public class TaskInfoDialog extends Dialog {
 	private Combo mSoftwareType;
 	private Combo mInstanceType;
 	private Text mRunCommand;
+	private int mWidgetStyle;
 	
 	private Task mTask;
 	
-	public TaskInfoDialog(Shell parent, Task task) {
+	public TaskInfoDialog(Shell parent, boolean isReadOnly) {
 		super(parent);
 		setText("Task info");
-		mTask = task;
-		//TODO 
-//		setLayout(new GridLayout(2, false));
+		mWidgetStyle = isReadOnly? SWT.READ_ONLY : SWT.NONE;
 	}
 	
 	public Task open(Task initialValues) {
@@ -51,7 +50,7 @@ public class TaskInfoDialog extends Dialog {
         
         initUI(shell);
         
-        initWidgetValues();
+        initWidgetValues(initialValues);
         
         shell.pack();
         Rectangle screenSize = shell.getDisplay().getBounds();
@@ -77,7 +76,7 @@ public class TaskInfoDialog extends Dialog {
         mRepository = createText(parent);
         
         addLabel(parent, "Software type");
-        mSoftwareType = new Combo(parent, SWT.NONE);
+        mSoftwareType = new Combo(parent, mWidgetStyle);
         String[] swTypes = new String[SoftwareType.values().length];
         int i = 0;
         for(SoftwareType type : SoftwareType.values()) {
@@ -86,7 +85,7 @@ public class TaskInfoDialog extends Dialog {
         mSoftwareType.setItems(swTypes);
         
         addLabel(parent, "Instance type");
-        mInstanceType = new Combo(parent, SWT.NONE);
+        mInstanceType = new Combo(parent, mWidgetStyle);
         String[] instanceTypes = new String[InstanceType.values().length];
         i = 0;
         for(InstanceType type : InstanceType.values()) {
@@ -113,13 +112,13 @@ public class TaskInfoDialog extends Dialog {
 		});
 	}
 	
-	private void initWidgetValues() {
-		mTaskName.setText(mTask.getTaskName());
-		mResultName.setText(mTask.getResultName());
-		mRepository.setText(mTask.getRepository());
-		mSoftwareType.select(mTask.getSoftwareType().ordinal());
-		mInstanceType.select(mTask.getInstanceType().ordinal());
-		mRunCommand.setText(mTask.getRunCommand());
+	private void initWidgetValues(Task task) {
+		mTaskName.setText(task.getTaskName());
+		mResultName.setText(task.getResultName());
+		mRepository.setText(task.getRepository());
+		mSoftwareType.select(task.getSoftwareType().ordinal());
+		mInstanceType.select(task.getInstanceType().ordinal());
+		mRunCommand.setText(task.getRunCommand());
 	}
 	
 	private void updateTask() {
@@ -137,7 +136,7 @@ public class TaskInfoDialog extends Dialog {
 	}
 	
 	private Text createText(Composite parent) {
-		Text text = new Text(parent, SWT.NONE);
+		Text text = new Text(parent, mWidgetStyle);
         GridData gd = new GridData(SWT.CENTER, SWT.CENTER, true, false);
         gd.widthHint = 300;
         text.setLayoutData(gd);
