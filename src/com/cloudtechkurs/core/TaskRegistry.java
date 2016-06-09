@@ -12,6 +12,8 @@ import org.json.JSONObject;
 public class TaskRegistry {
 	private static final String REGISTRY_PATH = "C:/registry.json";
 	
+	private APIManager mApiManager = new APIManager();
+	
 	private List<Task> mTasks = new ArrayList<Task>();
 	
 	public TaskRegistry() {}
@@ -60,5 +62,27 @@ public class TaskRegistry {
 	public void add(Task task) {
 		mTasks.add(task);
 	}
-
+	
+	public void deleteTask(String taskId) throws Exception {
+		int index = getTaskIndexById(taskId);
+		if(index != -1) {
+			mTasks.remove(index);
+		}
+		mApiManager.deleteTask(taskId);
+	}
+	
+	public void stopTask(String taskId) throws Exception {
+		int index = getTaskIndexById(taskId);
+		mApiManager.stopTask(taskId);
+		mTasks.get(index).setStatus("Stopped");
+	}
+	
+	private int getTaskIndexById(String taskId) {
+		for(int i=0; i<mTasks.size(); i++) {
+			if(mTasks.get(i).getTaskId().equals(taskId)) {
+				return i;
+			}
+		}
+		return -1;
+	}
 }

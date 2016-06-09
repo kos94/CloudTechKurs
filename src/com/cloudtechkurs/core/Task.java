@@ -96,6 +96,10 @@ public class Task {
 		mTaskId = id;
 	}
 	
+	public void setStatus(String status) {
+		mStatus = status;
+	}
+	
 	public JSONObject toJSON() {
 		JSONObject obj = new JSONObject();
 		obj.put(APIManager.TASK_ID_KEY, mTaskId);
