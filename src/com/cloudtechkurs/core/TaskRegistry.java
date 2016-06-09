@@ -10,7 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class TaskRegistry {
-	private static final String REGISTRY_PATH = "C:/registry.xml";
+	private static final String REGISTRY_PATH = "C:/registry.json";
 	
 	private List<Task> mTasks = new ArrayList<Task>();
 	
